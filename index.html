@@ -3,458 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Application Access</title>
+    <title>Update Required</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        :root {
-            --bg-dark: #0d0d0d;
-            --glass-bg: rgba(22, 22, 22, 0.75);
-            --glass-border: rgba(255, 255, 255, 0.05);
-            --accent-color: #318a93;
-            --accent-hover: #256b72;
-            --danger-color: #ef4444;
-            --text-main: #ffffff;
-            --text-muted: #6c7278;
-            --input-bg: #111214;
-            --brand-blue: #1c2b8c;
-            --neon-glow: #00e5ff;
-        }
-
-        * {
-            box-sizing: border-box;
+        /* Force full screen and remove default margins */
+        html, body {
             margin: 0;
             padding: 0;
-            font-family: 'Courier New', Courier, monospace;
-        }
-
-        body {
-            /* Fallback background color used for the notice screen */
-            background-color: var(--bg-dark);
-            min-height: 100vh;
+            width: 100%;
+            height: 100%;
+            overflow: hidden; /* Prevents scrollbars */
+            font-family: 'Inter', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
-            color: var(--text-main);
-            transition: background 0.5s ease;
+            background: #0f172a; /* Dark modern background */
         }
 
-        /* Ambient background overlay applied only when image is active */
-        body.show-bg::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
+        .fullscreen-card {
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 1;
-        }
-
-        /* Dynamic background class triggered upon entering the login form */
-        body.show-bg {
-            background: url('https://files.catbox.moe/d9bnza.jpg') no-repeat center center fixed;
-            background-size: cover;
-        }
-
-        /* --- SPLASH SCREEN SYSTEM --- */
-        #splashScreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: var(--bg-dark);
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 999;
-            opacity: 0;
-            animation: fadeIn 0.5s ease-out forwards;
+            text-align: center;
+            padding: 20px;
+            background: radial-gradient(circle at center, #1e293b 0%, #0f172a 100%);
+            color: #f8fafc;
         }
 
-        .logo-main {
-            font-size: 3.2rem;
-            font-weight: 700;
-            color: #ffffff;
+        h1 {
+            font-size: clamp(2rem, 8vw, 3.5rem);
+            margin-bottom: 1rem;
             letter-spacing: -1px;
-            line-height: 1;
         }
 
-        .logo-main span {
-            font-weight: 300;
-            color: #b0b0b0;
+        p {
+            font-size: clamp(1rem, 4vw, 1.25rem);
+            color: #94a3b8;
+            max-width: 500px;
+            margin-bottom: 3rem;
         }
 
-        .logo-line {
-            width: 160px;
-            height: 3px;
-            background-color: var(--accent-color);
-            margin: 12px 0;
-        }
-
-        .logo-sub {
-            font-size: 0.65rem;
-            font-weight: 600;
-            color: var(--accent-color);
-            letter-spacing: 3px;
-            text-transform: uppercase;
-        }
-
-        /* --- MAIN CONTENT & POPUP SYSTEM --- */
-        #mainContent {
-            display: none;
-            opacity: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 2;
-        }
-
-        /* UI Image Brand Header Styles */
-        .brand-header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        .brand-icon-box {
-            width: 64px;
-            height: 64px;
-            background: #0d1117;
-            border-radius: 18px;
+        .download-btn {
             display: inline-flex;
-            justify-content: center;
             align-items: center;
-            box-shadow: 0 0 20px rgba(0, 229, 255, 0.2), inset 0 0 10px rgba(0, 229, 255, 0.1);
-            border: 1px solid rgba(0, 229, 255, 0.2);
-            margin-bottom: 12px;
-        }
-
-        .brand-icon-box svg {
-            filter: drop-shadow(0px 0px 6px var(--neon-glow));
-        }
-
-        .brand-title {
-            font-size: 2.5rem;
-            font-weight: 900;
-            color: #ffffff;
-            font-style: italic;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-
-        /* Login Container panel */
-        .modal-container {
-            background: var(--glass-bg);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 44px 36px;
-            width: 90%;
-            max-width: 410px;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7);
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .icon-wrapper {
-            width: 56px;
-            height: 56px;
-            background: rgba(239, 68, 68, 0.1);
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 0 auto 20px auto;
-            color: var(--danger-color);
-        }
-
-        h2.screen-title {
-            font-size: 1.6rem;
-            font-weight: 700;
-            margin-bottom: 6px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            color: #ffffff;
-        }
-
-        p.screen-subtitle {
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-bottom: 28px;
-            font-weight: 400;
-        }
-
-        /* Form Layout Elements */
-        .form-section {
-            display: none;
-            text-align: left;
-        }
-
-        .form-group {
-            margin-bottom: 22px;
-        }
-
-        .field-label-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            margin-bottom: 10px;
-        }
-
-        .field-label-wrapper svg {
-            color: #00bcd4;
-        }
-
-        label {
-            display: block;
-            font-size: 0.75rem;
-            color: #00bcd4;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .input-wrapper {
-            position: relative;
-        }
-
-        input {
-            width: 100%;
-            padding: 15px 16px;
-            background: var(--input-bg);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 10px;
+            gap: 12px;
+            background-color: #3b82f6;
             color: white;
-            font-size: 0.95rem;
-            transition: all 0.2s ease;
-        }
-
-        input::placeholder {
-            color: #3b3e45;
-        }
-
-        input:focus {
-            outline: none;
-            border-color: rgba(0, 229, 255, 0.4);
-            background: #15171c;
-        }
-
-        /* Interface Buttons */
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 16px;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 0.85rem;
+            padding: 16px 40px;
+            border-radius: 12px;
+            text-decoration: none;
             font-weight: 700;
-            cursor: pointer;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.2s ease;
+            font-size: 1.1rem;
+            transition: transform 0.2s, background 0.2s;
         }
 
-        .btn-primary {
-            background: var(--brand-blue);
-            box-shadow: 0 4px 15px rgba(28, 43, 140, 0.4);
-        }
-
-        .btn-primary:hover {
-            background: #2335ad;
-            box-shadow: 0 6px 20px rgba(28, 43, 140, 0.6);
-        }
-
-        .btn-notice {
-            background: var(--accent-color);
-            text-transform: none;
-            font-size: 0.9rem;
-            line-height: 1.4;
-        }
-
-        .btn-notice:hover {
-            background: var(--accent-hover);
-        }
-
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        /* Secondary Action Footer */
-        .footer-action {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            margin-top: 24px;
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            font-size: 0.78rem;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: color 0.2s;
-            width: 100%;
-        }
-
-        .footer-action:hover {
-            color: #ffffff;
-        }
-
-        /* Screen Bottom Branding info text */
-        .system-footer-text {
-            position: absolute;
-            bottom: 30px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            letter-spacing: 4px;
-            color: rgba(255, 255, 255, 0.25);
-            text-transform: uppercase;
-            z-index: 2;
-        }
-
-        .error-message {
-            display: none;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.15);
-            color: #f87171;
-            padding: 12px;
-            border-radius: 8px;
-            font-size: 0.85rem;
-            margin-bottom: 20px;
-            text-align: center;
-            animation: shake 0.4s ease-in-out;
-        }
-
-        /* --- ANIMATIONS --- */
-        @keyframes fadeIn {
-            to { opacity: 1; }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-4px); }
-            75% { transform: translateX(4px); }
+        .download-btn:hover {
+            background-color: #2563eb;
+            transform: scale(1.05);
         }
     </style>
 </head>
 <body>
 
-    <div id="splashScreen">
-        <div class="logo-main">ＶＬＦ-<span>Ｔｅｃ</span></div>
-        <div class="logo-line"></div>
-        <div class="logo-sub">𝙳𝚒𝚐𝚒𝚝𝚊𝚕 𝙴𝚟𝚘𝚕𝚞𝚝𝚒𝚘𝚗</div>
-    </div>
-
-    <div id="mainContent">
+    <div class="fullscreen-card">
+        <h1>App Expired</h1>
+        <p>This version of the application is no longer supported. Please download the latest update to continue.</p>
         
-        <div class="brand-header">
-            <div class="brand-icon-box">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="#00e5ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </div>
-            <div class="brand-title">Splash</div>
-        </div>
-
-        <div class="modal-container">
-            
-            <div id="noticeScreen">
-                <div class="icon-wrapper">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-                </div>
-                <h2 class="screen-title" style="font-size: 1.4rem; margin-bottom: 12px;">𝚂𝚙𝚕𝚊𝚜𝚑 𝙶𝚞𝚒𝚍𝚎 𝙴𝚇𝙴</h2>
-                <p class="screen-subtitle" style="line-height: 1.6;">𝙳𝚎𝚊𝚛 𝚄𝚜𝚎𝚛, 𝚆𝚎 𝙷𝚊ve 𝙳𝚎𝚝𝚎𝚌𝚝 𝙰 𝙽𝚎𝚠 𝙳𝚎𝚟𝚒𝚌𝚎, 𝚄𝚗𝚏𝚘𝚛𝚝𝚞𝚗𝚊𝚝𝚎𝚕𝚢 𝙾𝚞𝚛 𝙰𝚕𝚕 𝙰𝚌𝚌𝚘𝚞𝚗𝚝 𝚂𝚕𝚘𝚝𝚜 𝙰𝚛𝚎 𝙵𝚞𝚕𝚕, 𝚂𝚘 𝚈𝚘𝚞 𝙲𝚊𝚗'𝚝 𝙲𝚛𝚎𝚊𝚝𝚎 𝚊𝚗 𝙰𝚌𝚌𝚘𝚞𝚗𝚝 An𝚍 𝚄𝚜𝚎 𝚃𝚑𝚒𝚜 𝙰𝚙𝚙, 𝙿𝚕𝚎𝚊𝚜𝚎 𝙱𝚎 𝙿𝚞𝚗𝚌𝚝𝚞𝚊𝚕, 𝚈𝚘𝚞 𝙼𝚒𝚐𝚑𝚝 𝙳𝚎𝚕𝚎𝚝𝚎 𝚝𝚑𝚒𝚜 𝚊𝚙𝚙.</p>
-                <button class="btn btn-notice" onclick="showForm()">𝙸 𝙷𝚊𝚟𝚎 𝙰𝚕𝚛𝚎𝚊𝚍𝚢 𝙲𝚛𝚎𝚊𝚝𝚎𝚍 𝙼𝚢 𝙽𝚎𝚠 𝙰𝚌𝚌𝚘𝚞𝚗𝚝 & 𝚃𝚑𝚒𝚜 𝚒𝚜 𝙼𝚢 𝙰𝚗𝚘𝚝𝚑𝚎𝚛 𝙳𝚎𝚟𝚒𝚌𝚎 </button>
-            </div>
-
-            <div id="formScreen" class="form-section">
-                <h2 class="screen-title">Login</h2>
-                <p class="screen-subtitle">Access your identity</p>
-                
-                <div class="error-message" id="errorMsg">Invalid credential</div>
-
-                <form id="loginForm" onsubmit="handleLogin(event)">
-                    <div class="form-group">
-                        <div class="field-label-wrapper">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                            <label for="username">Username</label>
-                        </div>
-                        <div class="input-wrapper">
-                            <input type="text" id="username" required autocomplete="off" placeholder="username">
-                        </div>
-                    </div>
-                    
-                    <div class="form-group">
-                        <div class="field-label-wrapper">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                            <label for="email">Email Address</label>
-                        </div>
-                        <div class="input-wrapper">
-                            <input type="email" id="email" required autocomplete="off" placeholder="user@network.com">
-                        </div>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary" style="margin-top: 12px;">Login</button>
-                </form>
-
-                <button class="footer-action" onclick="alert('Account creation currently restricted')">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v8"/><path d="M8 12h8"/></svg>
-                    Create an account
-                </button>
-            </div>
-
-        </div>
-
-        <div class="system-footer-text">SV-12 PRO ACTIVE • VLF-TEC</div>
+        <a href="https://www.mediafire.com/file/j6ukz1fqgkiplj1/Splash+Nova_.apk/file" target="_blank" rel="noopener noreferrer" class="download-btn">
+            <i class="fas fa-download"></i> Download Update
+        </a>
     </div>
 
-    <script>
-        // Handle 3 Second Splash Screen Timing Workflow Logic
-        window.addEventListener('DOMContentLoaded', () => {
-            setTimeout(() => {
-                const splash = document.getElementById('splashScreen');
-                const main = document.getElementById('mainContent');
-                
-                // Fade out splash screen
-                splash.style.transition = 'opacity 0.5s ease';
-                splash.style.opacity = '0';
-                
-                setTimeout(() => {
-                    splash.style.display = 'none';
-                    // Show main container
-                    main.style.display = 'flex';
-                    main.style.animation = 'fadeIn 0.5s ease-out forwards';
-                }, 500);
-                
-            }, 3000); // 3000ms = 3 Seconds
-        });
-
-        function showForm() {
-            // Apply the image background explicitly when entering the login view
-            document.body.classList.add('show-bg');
-            document.getElementById('noticeScreen').style.display = 'none';
-            document.getElementById('formScreen').style.display = 'block';
-        }
-
-        function handleLogin(event) {
-            event.preventDefault();
-            
-            const errorElement = document.getElementById('errorMsg');
-            
-            // UI Trick: Reset animation if user clicks submit multiple times
-            errorElement.style.display = 'none';
-            void errorElement.offsetWidth; 
-            
-            errorElement.style.display = 'block';
-        }
-    </script>
 </body>
 </html>
